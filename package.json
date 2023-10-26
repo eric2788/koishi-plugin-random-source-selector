@@ -8,6 +8,14 @@
     "lib",
     "dist"
   ],
+  "contributors": [
+    "ericlam <tsukiko852@gmail.com>"
+  ],
+  "homepage": "https://github.com/eric2788/koishi-plugin-henrik-valorant",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/eric2788/koishi-plugin-henrik-valorant.git"
+  },
   "license": "MIT",
   "scripts": {},
   "keywords": [
@@ -17,5 +25,9 @@
   ],
   "peerDependencies": {
     "koishi": "^4.15.1"
+  },
+  "dependencies": {
+    "axios": "^1.5.1",
+    "node-html-parser": "^6.1.11"
   }
 }

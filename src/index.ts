@@ -19,6 +19,7 @@ export function apply(ctx: Context, config: Config) {
 
 async function sendFromSource(session: Session<never, never, Context>, source: RandomSource) {
   try {
+    await session.send(`获取 ${source.command} 中，请稍候...`)
     const res: AxiosResponse = await axios.get(source.source_url)
     if (res.status !== 200) {
       const msg = JSON.stringify(res.data)
@@ -27,7 +28,6 @@ async function sendFromSource(session: Session<never, never, Context>, source: R
     const elements = parseSource(res, source.data_type, {
       json_key: source.json_key
     })
-
     await sendSource(session, source.send_type, elements)
 
   } catch (err) {

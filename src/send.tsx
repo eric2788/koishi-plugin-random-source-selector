@@ -28,7 +28,9 @@ export async function sendSource(session: Session<never, never, Context>, type: 
             await session.send(`不支持的发送类型: ${type}`)
             return
         }
-        const selected = getRandom(source.filter(sendMechanic.can_send))
+        const filtered = source.filter(sendMechanic.can_send)
+        console.info(`源数据量: ${source.length}, 发送数据量: ${filtered.length}`)
+        const selected = getRandom(filtered)
         if (selected && selected.length > 0) {
             await session.send(sendMechanic.to_jsx(selected))
         } else {

@@ -1,7 +1,7 @@
 {
   "name": "koishi-plugin-random-source-selector",
   "description": "透过多行文本链接随机抽出一条作为图片或文案发送，支援自定义指令",
-  "version": "0.0.1-alpha.1",
+  "version": "0.0.1",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
   "files": [

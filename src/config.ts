@@ -45,9 +45,9 @@ export const Config: Schema<Config> = Schema.object({
             }).description('返回数据为 JSON Object 时使用'),
             Schema.object({
                 data_type: Schema.const('html').required(),
-                jquery_selector: Schema.string().description('jQuery 选择器'),
-                attribute: Schema.string().description('要提取的 HTML 元素属性')
-            }).description('返回数据为 HTML 时使用, 用于获取图片链接或base64'),
+                jquery_selector: Schema.string().description('jQuery 选择器').default('p'),
+                attribute: Schema.string().description('要提取的 HTML 元素属性, 数值为空时获取HTML元素内文字').default('')
+            }).description('返回数据为 HTML 时使用, 默认提取所有 `p` 元素内的文字'),
             Schema.object([])
         ])
     ])),

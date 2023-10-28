@@ -7,6 +7,8 @@ interface SendMechanic {
     to_jsx: (s: string) => Fragment
 }
 
+const recalls = new Set<NodeJS.Timeout>()
+
 
 const sendMap: { [key in SendType]: SendMechanic } = {
     'text': {
@@ -21,7 +23,7 @@ const sendMap: { [key in SendType]: SendMechanic } = {
 }
 
 
-export async function sendSource(session: Session<never, never, Context>, type: SendType, source: string[]) {
+export async function sendSource(session: Session<never, never, Context>, type: SendType, source: string[], recall?: number) {
     try {
         const sendMechanic = sendMap[type]
         if (!sendMechanic) {
@@ -32,7 +34,12 @@ export async function sendSource(session: Session<never, never, Context>, type: 
         console.info(`源数据量: ${source.length}, 发送数据量: ${filtered.length}`)
         const selected = getRandom(filtered)
         if (selected && selected.length > 0) {
-            await session.send(sendMechanic.to_jsx(selected))
+            const [msg] = await session.send(sendMechanic.to_jsx(selected))
+            if (recall > 0) {
+                console.debug(`设置${recall}分钟后撤回`)
+                const timeout = setTimeout(() => session.bot.deleteMessage(session.channelId, msg), recall * 5000)
+                recalls.add(timeout)
+            }
         } else {
             await session.send('没有符合条件的结果')
         }
@@ -40,4 +47,9 @@ export async function sendSource(session: Session<never, never, Context>, type: 
         console.error(err)
         await session.send(`发送失败: ${err?.message ?? err}`)
     }
+}
+
+export function clearRecalls() {
+    recalls.forEach(timeout => clearTimeout(timeout))
+    recalls.clear()
 }

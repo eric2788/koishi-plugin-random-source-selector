@@ -10,6 +10,7 @@ export interface RandomSource {
     source_url: string
     send_type: SendType
     data_type: SplitType
+    recall?: number
 
     json_key?: string
     jquery_selector?: string
@@ -27,6 +28,7 @@ export const Config: Schema<Config> = Schema.object({
             command: Schema.string().description('指令名称').required(),
             alias: Schema.array(Schema.string()).description('指令别名').default([]),
             source_url: Schema.string().description('数据源地址').required(),
+            recall: Schema.number().description('消息撤回时限(分钟,0为不撤回)').default(0),
             send_type: Schema.union([
                 Schema.const('image').description('图片'),
                 Schema.const('text').description('文本')

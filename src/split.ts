@@ -7,6 +7,10 @@ import { parse } from 'node-html-parser';
 
 const splitMap: { [key in SplitType]: (data: any, options?: any) => string[] } = {
     json: (data: any, options?: any) => {
+        if (typeof data === 'string') {
+            console.debug('json data is string, try to parse it', data)
+            data = JSON.parse(data.replace('<br>', '\\n'))
+        }
         const key: string | undefined = options?.json_key
         let elements: any[]
         if (Array.isArray(data)) {

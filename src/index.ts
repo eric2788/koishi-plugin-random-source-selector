@@ -2,7 +2,7 @@ import { Context, Session, Command } from 'koishi'
 import { Config, RandomSource } from './config'
 import axios, { AxiosResponse } from 'axios'
 import { parseSource } from './split'
-import { sendSource } from './send'
+import { clearRecalls, sendSource } from './send'
 
 export { Config } from './config'
 export const name = 'random-source-selector'
@@ -15,6 +15,8 @@ export function apply(ctx: Context, config: Config) {
       .alias(...source.alias)
       .action(({ session }) => sendFromSource(session, source))
   })
+
+  ctx.on('dispose', () => clearRecalls())
 }
 
 async function sendFromSource(session: Session<never, never, Context>, source: RandomSource) {
@@ -28,7 +30,7 @@ async function sendFromSource(session: Session<never, never, Context>, source: R
     const elements = parseSource(res, source.data_type, {
       json_key: source.json_key
     })
-    await sendSource(session, source.send_type, elements)
+    await sendSource(session, source.send_type, elements, source.recall)
 
   } catch (err) {
     if (axios.isAxiosError(err)) {

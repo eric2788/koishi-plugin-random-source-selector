@@ -37,7 +37,7 @@ export async function sendSource(session: Session<never, never, Context>, type: 
             const [msg] = await session.send(sendMechanic.to_jsx(selected))
             if (recall > 0) {
                 console.debug(`设置${recall}分钟后撤回`)
-                const timeout = setTimeout(() => session.bot.deleteMessage(session.channelId, msg), recall * 5000)
+                const timeout = setTimeout(() => session.bot.deleteMessage(session.channelId, msg), recall * 60000)
                 recalls.add(timeout)
             }
         } else {

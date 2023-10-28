@@ -6,7 +6,7 @@ import { clearRecalls, sendSource } from './send'
 
 export { Config } from './config'
 export const name = 'random-source-selector'
-export const usage = '透过多行文本链接随机抽出一条作为图片或文案发送，支援自定义指令'
+export const usage = `透过扫描API链接返回的数据随机抽出一条作为图片或文案发送，支援自定义指令`
 
 export function apply(ctx: Context, config: Config) {
   // write your plugin here
@@ -28,7 +28,9 @@ async function sendFromSource(session: Session<never, never, Context>, source: R
       throw new Error(`${msg} (${res.statusText})`)
     }
     const elements = parseSource(res, source.data_type, {
-      json_key: source.json_key
+      json_key: source.json_key,
+      jquery_selector: source.jquery_selector,
+      attribute: source.attribute
     })
     await sendSource(session, source.send_type, elements, source.recall)
 

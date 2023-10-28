@@ -40,7 +40,7 @@ const splitMap: { [key in SplitType]: (data: any, options?: any) => string[] } =
     html: (data: any, options?: any) => {
         const { jquery_selector: selector, attribute } = options
         const root = parse(data)
-        return Array.from(root.querySelectorAll(selector ?? 'img')).map(e => e.getAttribute(attribute ?? 'src'))
+        return Array.from(root.querySelectorAll(selector ?? 'p')).map(e => attribute ? e.getAttribute(attribute) : e.structuredText)
     }
 }
 

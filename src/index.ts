@@ -6,7 +6,7 @@ import { clearRecalls, sendSource } from './send'
 
 export { Config } from './config'
 export const name = 'random-source-selector'
-export const usage = `透过扫描API链接返回的数据随机抽出一条作为图片或文案发送，支援自定义指令`
+export const usage = `用法请详阅 readme.md`
 
 export function apply(ctx: Context, config: Config) {
   // write your plugin here

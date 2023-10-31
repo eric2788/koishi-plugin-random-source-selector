@@ -1,6 +1,6 @@
 import { AxiosResponse } from "axios";
 import { SplitType } from "./config";
-import { parseObjectToArr } from "./utils";
+import { parseJson, parseObjectToArr } from "./utils";
 import { parseData } from "./data-convert";
 import { parse } from 'node-html-parser';
 
@@ -13,19 +13,12 @@ const splitMap: { [key in SplitType]: (data: any, options?: any) => string[] } =
         }
         const key: string | undefined = options?.json_key
         let elements: any[]
-        if (Array.isArray(data)) {
-            elements = parseObjectToArr(data)
-        } else {
-            let target = data
-            if (key) {
-                const keys = key.split('.')
-                for (const k of keys) {
-                    target = target[k]
-                }
-            }
-            elements = parseObjectToArr(target)
+        let target = data
+        if (key) {
+            // avoid injection
+            target = parseJson(data, key.replaceAll(/[;{}]/g, ''))
         }
-
+        elements = parseObjectToArr(target)
         return elements
             .filter(s => typeof s === 'string')
             .map(s => s as string)

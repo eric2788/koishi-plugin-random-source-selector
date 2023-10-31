@@ -43,7 +43,7 @@ export const Config: Schema<Config> = Schema.object({
         Schema.union([
             Schema.object({
                 data_type: Schema.const('json').required(),
-                json_key: Schema.string().description('JSON array 的 key, 支援使用 `.` 进行多层嵌套')
+                json_key: Schema.string().description('使用JS代码进行嵌套取值, 支援使用[]代表迭代元素')
             }).description('返回数据为 JSON Object 时使用'),
             Schema.object({
                 data_type: Schema.const('html').required(),

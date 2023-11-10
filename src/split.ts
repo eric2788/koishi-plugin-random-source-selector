@@ -3,12 +3,13 @@ import { SplitType } from "./config";
 import { parseJson, parseObjectToArr } from "./utils";
 import { parseData } from "./data-convert";
 import { parse } from 'node-html-parser';
+import { logger } from "./logger";
 
 
 const splitMap: { [key in SplitType]: (data: any, options?: any) => string[] } = {
     json: (data: any, options?: any) => {
         if (typeof data === 'string') {
-            console.debug('json data is string, try to parse it', data)
+            logger.debug('json data is string, try to parse it', data)
             data = JSON.parse(data.replace('<br>', '\\n'))
         }
         const key: string | undefined = options?.json_key
@@ -45,7 +46,7 @@ export function parseSource(res: AxiosResponse, type: SplitType, options?: any):
         throw new Error(`未知的分隔类型: ${type}`)
     }
     const result = parser(data, options)
-    console.debug(`${type} 的分隔结果: ${result}`)
+    logger.debug(`${type} 的分隔结果: ${result}`)
     return result
 }
 

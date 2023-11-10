@@ -1,13 +1,15 @@
-import { Context, Session, Command } from 'koishi'
+import { Context, Session, Command, Logger } from 'koishi'
 import { Config, RandomSource, extractOptions } from './config'
 import axios, { AxiosResponse } from 'axios'
 import { parseSource } from './split'
 import { clearRecalls, sendSource } from './send'
 import { format } from './utils' 
+import { logger } from './logger'
 
 export { Config } from './config'
 export const name = 'random-source-selector'
 export const usage = `用法请详阅 readme.md`
+
 
 export function apply(ctx: Context, config: Config) {
   // write your plugin here
@@ -24,6 +26,9 @@ export function apply(ctx: Context, config: Config) {
 async function sendFromSource(session: Session<never, never, Context>, source: RandomSource, args: string[] = [], data?: string) {
   try {
     const options = extractOptions(source)
+    logger.debug('options: ', options)
+    logger.debug('args: ', args)
+    logger.debug('data: ', data)
     await session.send(`获取 ${source.command} 中，请稍候...`)
     const requestData = data ?? source.request_data
     const res: AxiosResponse = await axios({
@@ -41,10 +46,10 @@ async function sendFromSource(session: Session<never, never, Context>, source: R
 
   } catch (err) {
     if (axios.isAxiosError(err)) {
-      console.error(err.code, err.stack)
+      logger.error(err.code, err.stack)
       await session.send(`发送失败: ${err.message}`)
     } else {
-      console.error(err)
+      logger.error(err)
       await session.send(`发送失败: ${err?.message ?? err}`)
     }
   }
@@ -54,7 +59,7 @@ const cmdConfig: Command.Config = {
   checkArgCount: true,
   checkUnknown: true,
   handleError: (err, { session, command }) => {
-    console.error(err)
+    logger.error(err)
     session.send(`执行指令 ${command.displayName} 时出现错误: ${err.message ?? err}`)
   }
 }

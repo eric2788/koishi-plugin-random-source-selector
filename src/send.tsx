@@ -2,6 +2,7 @@ import { Context, Fragment, Session } from "koishi";
 import { SendType } from "./config";
 import { getRandom } from "./utils";
 import { render } from 'ejs'
+import { logger } from "./logger";
 
 interface SendMechanic {
     can_send: (s: string, options?: any) => boolean
@@ -9,7 +10,6 @@ interface SendMechanic {
 }
 
 const recalls = new Set<NodeJS.Timeout>()
-
 
 const sendMap: { [key in SendType]: SendMechanic } = {
     'text': {
@@ -30,12 +30,14 @@ const sendMap: { [key in SendType]: SendMechanic } = {
                 const { ejs_template } = options;
                 if (ejs_template) {
                     return render(ejs_template, {data})
+                } else {
+                    return s
                 }
             } catch(err) {
-                console.error('Error while parsing ejs data and json:')
-                console.error(err)
+                logger.error('Error while parsing ejs data and json:')
+                logger.error(err)
+                throw err
             }
-            return s // fallback
         }
     }
 }
@@ -49,12 +51,12 @@ export async function sendSource(session: Session<never, never, Context>, type: 
             return
         }
         const filtered = source.filter(s => sendMechanic.can_send(s, options))
-        console.info(`源数据量: ${source.length}, 发送数据量: ${filtered.length}`)
+        logger.info(`源数据量: ${source.length}, 发送数据量: ${filtered.length}`)
         const selected = getRandom(filtered)
         if (selected && selected.length > 0) {
             const [msg] = await session.send(sendMechanic.to_jsx(selected, options))
             if (recall > 0) {
-                console.debug(`设置${recall}分钟后撤回`)
+                logger.debug(`设置${recall}分钟后撤回`)
                 const timeout = setTimeout(() => session.bot.deleteMessage(session.channelId, msg), recall * 60000)
                 recalls.add(timeout)
             }
@@ -62,7 +64,7 @@ export async function sendSource(session: Session<never, never, Context>, type: 
             await session.send('没有符合条件的结果')
         }
     }catch(err){
-        console.error(err)
+        logger.error(err)
         await session.send(`发送失败: ${err?.message ?? err}`)
     }
 }

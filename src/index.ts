@@ -1,8 +1,9 @@
 import { Context, Session, Command } from 'koishi'
-import { Config, RandomSource } from './config'
+import { Config, RandomSource, extractOptions } from './config'
 import axios, { AxiosResponse } from 'axios'
 import { parseSource } from './split'
 import { clearRecalls, sendSource } from './send'
+import { format } from './utils' 
 
 export { Config } from './config'
 export const name = 'random-source-selector'
@@ -11,28 +12,32 @@ export const usage = `用法请详阅 readme.md`
 export function apply(ctx: Context, config: Config) {
   // write your plugin here
   config.sources.forEach(source => {
-    ctx.command(source.command, '随机抽出该链接中的一条作为图片或文案发送', cmdConfig)
+    ctx.command(`${source.command} [...args]`, '随机抽出该链接中的一条作为图片或文案发送', cmdConfig)
+      .option('data', '-D [data:string] 请求数据')
       .alias(...source.alias)
-      .action(({ session }) => sendFromSource(session, source))
+      .action(({ session, options }, ...args) => sendFromSource(session, source, args, options.data))
   })
 
   ctx.on('dispose', () => clearRecalls())
 }
 
-async function sendFromSource(session: Session<never, never, Context>, source: RandomSource) {
+async function sendFromSource(session: Session<never, never, Context>, source: RandomSource, args: string[] = [], data?: string) {
   try {
+    const options = extractOptions(source)
     await session.send(`获取 ${source.command} 中，请稍候...`)
-    const res: AxiosResponse = await axios.get(source.source_url)
-    if (res.status !== 200) {
+    const requestData = data ?? source.request_data
+    const res: AxiosResponse = await axios({
+      method: source.request_method,
+      url: format(source.source_url, ...args),
+      headers: source.request_headers,
+      data: source.request_json ? JSON.parse(requestData) : requestData
+    })
+    if (res.status > 300 || res.status < 200) {
       const msg = JSON.stringify(res.data)
       throw new Error(`${msg} (${res.statusText})`)
     }
-    const elements = parseSource(res, source.data_type, {
-      json_key: source.json_key,
-      jquery_selector: source.jquery_selector,
-      attribute: source.attribute
-    })
-    await sendSource(session, source.send_type, elements, source.recall)
+    const elements = parseSource(res, source.data_type, options)
+    await sendSource(session, source.send_type, elements, source.recall, options)
 
   } catch (err) {
     if (axios.isAxiosError(err)) {
@@ -44,7 +49,6 @@ async function sendFromSource(session: Session<never, never, Context>, source: R
     }
   }
 }
-
 
 const cmdConfig: Command.Config = {
   checkArgCount: true,

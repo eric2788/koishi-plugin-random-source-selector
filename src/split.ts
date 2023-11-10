@@ -34,7 +34,8 @@ const splitMap: { [key in SplitType]: (data: any, options?: any) => string[] } =
         const { jquery_selector: selector, attribute } = options
         const root = parse(data)
         return Array.from(root.querySelectorAll(selector ?? 'p')).map(e => attribute ? e.getAttribute(attribute) : e.structuredText)
-    }
+    },
+    plain: (data: any) => [JSON.stringify(data)]
 }
 
 export function parseSource(res: AxiosResponse, type: SplitType, options?: any): string[] {

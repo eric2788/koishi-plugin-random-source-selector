@@ -62,17 +62,20 @@ export const Config: Schema<Config> = Schema.object({
             Schema.object({
                 data_type: Schema.const('json').required(),
                 json_key: Schema.string().description('使用JS代码进行嵌套取值, 支援使用[]代表迭代元素')
-            }).description('返回数据为 JSON Object 时使用'),
+            }).description('数据返回类型 - 额外配置'),
             Schema.object({
                 data_type: Schema.const('html').required(),
                 jquery_selector: Schema.string().description('jQuery 选择器').default('p'),
                 attribute: Schema.string().description('要提取的 HTML 元素属性, 数值为空时获取HTML元素内文字').default('')
-            }).description('返回数据为 HTML 时使用, 默认提取所有 `p` 元素内的文字'),
+            }).description('数据返回类型 - 额外配置'),
+            Schema.object({} as any)
+        ]),
+        Schema.union([
             Schema.object({
                 send_type: Schema.const('ejs').required(),
                 ejs_template: Schema.string().role('textarea', { rows: [4, 10] }).description('EJS 模板').required(),
-            }),
-            Schema.object([])
+            }).description('发送类型 - 额外配置'),
+            Schema.object({} as any)
         ])
     ])),
 })

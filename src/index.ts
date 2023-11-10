@@ -13,7 +13,7 @@ export function apply(ctx: Context, config: Config) {
   // write your plugin here
   config.sources.forEach(source => {
     ctx.command(`${source.command} [...args]`, '随机抽出该链接中的一条作为图片或文案发送', cmdConfig)
-      .option('data', '-D [data:string] 请求数据')
+      .option('data', '-D [data:text] 请求数据')
       .alias(...source.alias)
       .action(({ session, options }, ...args) => sendFromSource(session, source, args, options.data))
   })

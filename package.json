@@ -1,7 +1,7 @@
 {
   "name": "koishi-plugin-random-source-selector",
   "description": "透过扫描API链接返回的数据随机抽出一条作为图片或文案发送，支援自定义指令",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
   "files": [
@@ -17,7 +17,6 @@
     "url": "git+https://github.com/eric2788/koishi-plugin-random-source-selector.git"
   },
   "license": "MIT",
-  "scripts": {},
   "keywords": [
     "chatbot",
     "koishi",

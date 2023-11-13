@@ -1,7 +1,8 @@
 import { Dict, Schema } from 'koishi'
 
-export type SendType = 'image' | 'text' | 'ejs'
-export type SplitType = 'json' | 'txt' | 'image' | 'html' | 'plain'
+export type SendType = 'image' | 'text' | 'ejs' | 'audio' | 'video' |'file'
+// 'image' is drepcated, use resource instead
+export type SplitType = 'json' | 'txt' | 'image' | 'html' | 'plain' | 'resource' 
 export type RequestMethod = 'GET' | 'POST' | 'PUT' | 'DELETE'
 
 export interface RandomSource {
@@ -48,12 +49,16 @@ export const Config: Schema<Config> = Schema.object({
             send_type: Schema.union([
                 Schema.const('image').description('图片'),
                 Schema.const('text').description('文本'),
-                Schema.const('ejs').description('EJS 模板')
+                Schema.const('ejs').description('EJS 模板'),
+                Schema.const('audio').description('音频'),
+                Schema.const('video').description('视频'),
+                Schema.const('file').description('文件')
             ]).description('发送类型').default('text'),
             data_type: Schema.union([
                 Schema.const('json').description('JSON'),
                 Schema.const('txt').description('多行文本'),
-                Schema.const('image').description('图片'),
+                Schema.const('image').description('图片').deprecated(),
+                Schema.const('resource').description('资源 (图片/视频/音频等)'),
                 Schema.const('html').description('HTML 文本'),
                 Schema.const('plain').description('元数据, 供EJS模板使用')
             ]).description('数据返回类型').default('txt'),

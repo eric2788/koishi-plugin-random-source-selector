@@ -27,16 +27,14 @@ const splitMap: { [key in SplitType]: (data: any, options?: any) => string[] } =
     txt: (data: any) => {
         return (data as string).split('\n')
     },
-    image: (data: any) => {
-        // data-convert.ts 中已经处理了
-        return [data]
-    },
+    image: (data: any) =>  [data],
     html: (data: any, options?: any) => {
         const { jquery_selector: selector, attribute } = options
         const root = parse(data)
         return Array.from(root.querySelectorAll(selector ?? 'p')).map(e => attribute ? e.getAttribute(attribute) : e.structuredText)
     },
-    plain: (data: any) => [JSON.stringify(data)]
+    plain: (data: any) => [JSON.stringify(data)],
+    resource: (data: any) => [data]
 }
 
 export function parseSource(res: AxiosResponse, type: SplitType, options?: any): string[] {

@@ -22,6 +22,21 @@ const sendMap: { [key in SendType]: SendMechanic } = {
         to_jsx: (s: string) => <image url={s} />
     },
 
+    'audio': {
+        can_send: (s: string) => s.startsWith('http') || s.startsWith('data:audio/'),
+        to_jsx: (s: string) => <audio url={s} />
+    },
+
+    'video': {
+        can_send: (s: string) => s.startsWith('http') || s.startsWith('data:video/'),
+        to_jsx: (s: string) => <video url={s} />
+    },
+    
+    'file': {
+        can_send: (s: string) => s.startsWith('http') || s.startsWith('data:'),
+        to_jsx: (s: string) => <file url={s} />
+    },
+
     'ejs': {
         can_send: (s: string) => true,
         to_jsx: (s: string, options?: any) => {

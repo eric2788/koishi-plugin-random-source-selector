@@ -24,8 +24,54 @@
 - 音频
 - 文件
 
+目前支援透过指令传递参数:
+
+- 以 `{0}` `{1}` `{2}` 传入...
+
+- 透过 `--data` 传入 payload
 
 ## 一般例子
+
+**假设你需要传输指令参数到你的链接**
+
+你可以使用 `{0}` `{1}` 等等的方式来传递参数, 例如:
+
+```url
+https://google.com/search?q={0}
+```
+
+当你的指令为 `google hello` 时，插件会将 `{0}` 替换为 `hello`，并发送到 `https://google.com/search?q=hello`。
+
+另外也支援多个参数，例如:
+
+```url
+https://google.com/search?q={0}&safe={1}
+```
+
+当你的指令为 `google hello true` 时，插件会将 `{0}` 替换为 `hello`，`{1}` 替换为 `true`，并发送到 `https://google.com/search?q=hello&safe=true`。
+
+---
+
+**假设你需要透过 payload 传输参数到你的链接**
+
+payload一般用在POST，PUT等请求，你可以在设定中添加 `request_data` 数据，例如:
+
+```yml
+request_data: '{"name": "{0}", "age": "{1}"}'
+request_json: true
+```
+
+__注意: 假设你的数据为JSON，则必须设定 `request_json` 为 `true`__
+
+此外，你也可以透过传入 `--data` 来覆盖设定中的参数，例如:
+
+```sh
+创建用户 --data '{"name": "foo", "age": "bar"}'
+```
+
+插件会将 `--data` 的数据覆盖 `request_data` 中的数据，然后提交请求。
+
+---
 
 **假设你的链接返回多行文本**，例如
 

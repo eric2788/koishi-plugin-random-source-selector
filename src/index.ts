@@ -1,6 +1,5 @@
 import { Context, Session, Command, Logger } from 'koishi'
 import { Config, RandomSource, extractOptions } from './config'
-import { SourceResult } from './shared'
 import { parseSource } from './split'
 import { clearRecalls, sendSource } from './send'
 import { format } from './utils' 
@@ -41,11 +40,11 @@ async function sendFromSource(session: Session<never, never, Context>, source: R
     logger.debug('data: ', data)
     await session.send(`获取 ${source.command} 中，请稍候...`)
     const requestData = data ?? source.request_data
-    const data: SourceResult = await ctx.http[source.request_method.toLowerCase()]({
+    const data = await ctx.http({
       method: source.request_method,
       url: format(source.source_url, ...args),
       headers: source.request_headers,
-      data: source.request_json ? JSON.parse(requestData) : requestData
+      data: source.request_json ? JSON.parse(requestData) : requestData,
     })
     const elements = parseSource(data, source.data_type, options)
     await sendSource(session, source.send_type, elements, source.recall, options)

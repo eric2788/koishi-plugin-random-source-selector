@@ -8,6 +8,7 @@ import { logger } from './logger'
 export { Config } from './config'
 export const name = 'random-source-selector'
 export const usage = `用法请详阅 readme.md`
+export const reusable = true
 
 
 export function apply(ctx: Context, config: Config) {

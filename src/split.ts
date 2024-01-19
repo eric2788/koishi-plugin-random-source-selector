@@ -1,7 +1,7 @@
 import { AxiosResponse } from "axios";
-import { SplitType } from "./config";
+import { Splits, SplitType } from "./config";
 import { parseJson, parseObjectToArr } from "./utils";
-import { parseData } from "./data-convert";
+import { parseData } from "./convert";
 import { parse } from 'node-html-parser';
 import { logger } from "./logger";
 
@@ -24,10 +24,8 @@ const splitMap: { [key in SplitType]: (data: any, options?: any) => string[] } =
             .filter(s => typeof s === 'string')
             .map(s => s as string)
     },
-    txt: (data: any) => {
-        return (data as string).split('\n')
-    },
-    image: (data: any) =>  [data],
+    txt: (data: string) => (data as string).split('\n'),
+    image: (data: string) =>  [data],
     html: (data: any, options?: any) => {
         const { jquery_selector: selector, attribute } = options
         const root = parse(data)
@@ -35,14 +33,12 @@ const splitMap: { [key in SplitType]: (data: any, options?: any) => string[] } =
     },
     plain: (data: any) => [JSON.stringify(data)],
     resource: (data: any) => [data]
-}
+} satisfies Splits
 
 export function parseSource(res: AxiosResponse, type: SplitType, options?: any): string[] {
     const data = parseData(res, type)
     const parser = splitMap[type]
-    if (!parser) {
-        throw new Error(`未知的分隔类型: ${type}`)
-    }
+    if (!parser) throw new Error(`未知的分隔类型: ${type}`)
     const result = parser(data, options)
     logger.debug(`${type} 的分隔结果: ${result}`)
     return result
